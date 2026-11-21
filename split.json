@@ -1,13 +1,13 @@
 {
   "from": {
-    "file": "/tmp/claude-114406503/sw-site-NVq0Mq/page/index.html",
-    "bytes": 22594884,
-    "sha256": "7ac28c62838671dfe17db4032ee515d630a4967a1b24c63299778ad3f47e1a19"
+    "file": "/tmp/sw-site-FlM1v2/page/index.html",
+    "bytes": 22616715,
+    "sha256": "897008d27caa8489b81813322cc7246fe97e643b8bd665b15e99bfbb0ce355c2"
   },
   "page": {
     "path": "index.html",
-    "bytes": 1347261,
-    "sha256": "21ec37702d510c5a9779bc83cf632ce1be53a2b0d368bb3a01d0d6af88ca1d74"
+    "bytes": 1369092,
+    "sha256": "a3162dfbb0e5609b03a1a99a866f405724a4b94e7598ba82918fc6342c26e329"
   },
   "library": "/nfs/turbo/coe-kesuniot1/senseweaver/library/current",
   "kb": "/nfs/turbo/coe-kesuniot1/senseweaver/skill6/current/kb.json",
