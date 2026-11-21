@@ -1,0 +1,177 @@
+{
+  "from": {
+    "file": "/tmp/claude-114406503/sw-site-NVq0Mq/page/index.html",
+    "bytes": 22594884,
+    "sha256": "7ac28c62838671dfe17db4032ee515d630a4967a1b24c63299778ad3f47e1a19"
+  },
+  "page": {
+    "path": "index.html",
+    "bytes": 1347261,
+    "sha256": "21ec37702d510c5a9779bc83cf632ce1be53a2b0d368bb3a01d0d6af88ca1d74"
+  },
+  "library": "/nfs/turbo/coe-kesuniot1/senseweaver/library/current",
+  "kb": "/nfs/turbo/coe-kesuniot1/senseweaver/skill6/current/kb.json",
+  "files": [
+    {
+      "path": "library/P02.txt",
+      "type": "text/plain",
+      "kind": "library",
+      "id": "P02",
+      "glb": {
+        "bytes": 544216,
+        "sha256": "519f74015384f03a2fccb9788bb7731ab42bcf86e5a42b2cd33346ea26e9d5a6"
+      },
+      "library": "model.glb",
+      "bytes": 725624,
+      "sha256": "6f2fc11f252b0b0914776155e5c6bc06b2fecae4a0399328fb254ff84160a062"
+    },
+    {
+      "path": "library/HUM-hand_right_short.txt",
+      "type": "text/plain",
+      "kind": "library",
+      "id": "HUM-hand_right_short",
+      "glb": {
+        "bytes": 52628,
+        "sha256": "6241984d598917fbdcf28932c10c1a31b34ffcc250df5d2afeecbd779f18eabb"
+      },
+      "library": "model.glb",
+      "bytes": 70172,
+      "sha256": "6f74bb30cc60b6eea8702cff2163bb77a3dd6ba0950b24e20c57456fa2927aee"
+    },
+    {
+      "path": "media/fig-1.png",
+      "type": "image/png",
+      "kind": "media",
+      "id": "fig-1",
+      "bytes": 279203,
+      "sha256": "3ff20294c7ae51f6541578ce250fc784ad441c941dd9933f806857f6c0809f86"
+    },
+    {
+      "path": "media/fig-2.png",
+      "type": "image/png",
+      "kind": "media",
+      "id": "fig-2",
+      "bytes": 379988,
+      "sha256": "86d78e9da7ba902091d11dd5c3eecb2613308deddd64c9a9f6aa8afc30611c5c"
+    },
+    {
+      "path": "media/fig-3.png",
+      "type": "image/png",
+      "kind": "media",
+      "id": "fig-3",
+      "bytes": 51545,
+      "sha256": "8706aeeb19dbfe412f0b567b136d51fffa0a4becde69804d41642e9e49014796"
+    },
+    {
+      "path": "media/fig-4.png",
+      "type": "image/png",
+      "kind": "media",
+      "id": "fig-4",
+      "bytes": 44068,
+      "sha256": "b84d3ff83fd3e5706168a2458164cb461c9b82071f859ecb9505fab72dbf4073"
+    },
+    {
+      "path": "media/fig-5.png",
+      "type": "image/png",
+      "kind": "media",
+      "id": "fig-5",
+      "bytes": 179710,
+      "sha256": "38582750e0a8d61ff2b8a61db0aed4a690ba188d6c94cb86115f0552a1e7a1a5"
+    },
+    {
+      "path": "media/fig-6.png",
+      "type": "image/png",
+      "kind": "media",
+      "id": "fig-6",
+      "bytes": 166530,
+      "sha256": "5260e2bd8a8f60ae3070dd287e9080df63b2c669f17379316e4c780d69fe81b9"
+    },
+    {
+      "path": "media/fig-7.png",
+      "type": "image/png",
+      "kind": "media",
+      "id": "fig-7",
+      "bytes": 56162,
+      "sha256": "4e2cbdf04d8a097698a46d30eff72f12b0b35a13c2f0007657b25b480e7ffaff"
+    },
+    {
+      "path": "media/fig-8.png",
+      "type": "image/png",
+      "kind": "media",
+      "id": "fig-8",
+      "bytes": 181484,
+      "sha256": "795a11556db7913a589446ddd8ca6fd56af7e2243efb7cb91700f9c037d61865"
+    },
+    {
+      "path": "media/fig-9.png",
+      "type": "image/png",
+      "kind": "media",
+      "id": "fig-9",
+      "bytes": 186223,
+      "sha256": "7ccbe3b4390299f5be7ed92159d0014170f8f7d1a8634414dd2009a198fef309"
+    },
+    {
+      "path": "media/clip-slider.jpg",
+      "type": "image/jpeg",
+      "kind": "media",
+      "id": "clip-slider",
+      "bytes": 1571370,
+      "sha256": "49061f3c86e4a995f36ad2672418fa6cc0f0584d94a35475828e4550b48c9b67"
+    },
+    {
+      "path": "media/clip-mixer.jpg",
+      "type": "image/jpeg",
+      "kind": "media",
+      "id": "clip-mixer",
+      "bytes": 6647261,
+      "sha256": "30551815ed5b4d929bda3e0ef5f804493230c3d4aaaf12f5296a51a153775972"
+    },
+    {
+      "path": "media/clip-pipeline.jpg",
+      "type": "image/jpeg",
+      "kind": "media",
+      "id": "clip-pipeline",
+      "bytes": 1456853,
+      "sha256": "c902738297a9861a3665166a44f09731b932027b27df8e757f47d26e5f0568b5"
+    },
+    {
+      "path": "media/clip-layers.jpg",
+      "type": "image/jpeg",
+      "kind": "media",
+      "id": "clip-layers",
+      "bytes": 2047831,
+      "sha256": "b4dc50476be0749570f301313c29adfe92a9110052c235bf711f67c6827740c3"
+    },
+    {
+      "path": "media/clip-assembly.jpg",
+      "type": "image/jpeg",
+      "kind": "media",
+      "id": "clip-assembly",
+      "bytes": 1415653,
+      "sha256": "1ab37d9bc0f6e2960f2137a4a6b5f3e443031cf4a7c6458e7fbb923738cbfaa8"
+    },
+    {
+      "path": "kg/exp-kg.json",
+      "type": "application/json",
+      "kind": "kg",
+      "id": "exp-kg",
+      "kb": true,
+      "bytes": 900491,
+      "sha256": "9a3b7a5e5eb96cd3894b957601ae6695b416a54b2452c6a87cef23b8f655ff1c"
+    },
+    {
+      "path": "world/moir-widgets-home.glb.js",
+      "type": "text/javascript",
+      "kind": "world",
+      "bytes": 1891935,
+      "sha256": "57b0e14fc9446655649ce439785c082b19e56fc3a17f0142809823d8272bf2a0"
+    },
+    {
+      "path": "about/assets.jpg",
+      "type": "image/jpeg",
+      "kind": "about",
+      "bytes": 255701,
+      "sha256": "a51c4183387e14b4b30743bf27ce09d141f5416df282c4171cdf4dd71a7e139f"
+    }
+  ]
+}
