@@ -14,6 +14,8 @@ window.S2S_HASH0 = location.hash;
 // 页面跳转到现在的第一页的…一定要保证一进去就是这一页”): tools/site.mjs --opening sets it; js/feedback.js, opening, stays as the fallback
 window.S2S_OPENING_FIRST = true;
 if (window.S2S_OPENING_FIRST && !location.hash && !navigator.webdriver) { document.documentElement.style.visibility = "hidden"; location.replace("opening/" + location.search); }
+// (and on the way in from it, the paper drawn while the simulator loads: opening/entrance.js; js/feedback.js says when it is ready)
+else if (window.S2S_OPENING_FIRST && !navigator.webdriver) document.write('<script src="opening/entrance.js"><\/script>');
 // the theme before the first paint: ?theme=light|dark, else the one last picked
 try { const t = new URLSearchParams(location.search).get("theme") || localStorage.getItem("senseweaver-theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) {}
 </script>
@@ -747,6 +749,7 @@ button.tocrow { width: 100%; font: inherit; text-align: left; cursor: pointer; }
 .about .abpv { flex: 1 1 0; min-height: 0; max-height: 180px; margin-bottom: 4px; border-radius: 8px; overflow: hidden; background: var(--line); }
 .about .abhead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .about .abpv img, .about .abpv canvas { width: 100%; height: 100%; object-fit: cover; display: block; }
+.about [data-about="assets"] .abpv img { object-position: right center; } /* (its count at its right edge) */
 .about .abpv img[hidden] { display: none; } /* (drawn in a canvas of its own: js/table.js, aboutPics) */
 .about .abpv[data-live="exp-kg"] { background: #03050a; } /* the Universe's night sky (js/flight.js) */
 /* a preview opens large on a click (js/table.js, aboutZoom; the user, 2026-11-15 16:20Z) */
@@ -1037,7 +1040,7 @@ body.nobar #dots { opacity: 0; pointer-events: none; }
 .slide[data-kind="world"] .wn.l i { grid-column: 2; }
 .slide[data-kind="world"] .wn.l b, .slide[data-kind="world"] .wn.l span { grid-column: 1; }
 .slide[data-kind="world"] .wn b { font: 700 18px/1.15 var(--font); }
-.slide[data-kind="world"] .wn b sup { margin-left: 4px; font-size: 14px; color: var(--ink-3); }
+.slide[data-kind="world"] .wn b sup { display: inline-block; height: 15px; overflow: hidden; margin-left: 4px; font-size: 14px; line-height: 15px; vertical-align: .3em; color: var(--ink-3); } /* (the room mark kept inside its name's line: MoiréWidgets' “⌂” touched the line under it) */
 .slide[data-kind="world"] .wn span { font-size: 15px; line-height: 1.22; color: var(--ink-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .slide[data-kind="world"] .wn.me i { width: 20px; height: 20px; box-shadow: 0 0 0 6px color-mix(in srgb, var(--c) 26%, transparent); }
 .slide[data-kind="world"] .wn.me b { font-size: 22px; }
@@ -1485,8 +1488,8 @@ h1, h2 { font-family: var(--serif); font-weight: 600; letter-spacing: -.01em; }
 .controls .btn.preset[aria-pressed="true"] { border-color: var(--act); background: var(--act-soft); box-shadow: inset 0 0 0 1.5px var(--act); }
 .slide[data-level="3"]:not([data-kind]) .controls { gap: 10px; }
 .slide[data-level="3"]:not([data-kind]) .slider { font-size: 22px; }
-/* the other controls, folded: they open over the lines above, so the readouts under them stay in view and the
-   column keeps its height */
+/* the other controls, folded: they open under their button, in the column (js/deck.js, fitColumn keeps the column above
+   the status line) */
 .morectl { position: relative; }
 .morectl > summary { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 15px; border-radius: 999px; border: 1px dashed var(--line-strong); font: 600 20px/1 var(--font); color: var(--ink-2); cursor: pointer; list-style: none; user-select: none; }
 .morectl > summary::-webkit-details-marker { display: none; }
@@ -1495,7 +1498,9 @@ h1, h2 { font-family: var(--serif); font-weight: 600; letter-spacing: -.01em; }
 .morectl[open] > summary::before { content: "\2212"; }
 .morectl > summary:hover { border-color: var(--accent); }
 .morectl > summary:focus-visible { outline: 3px solid var(--second); outline-offset: 3px; }
-.morectl > .controls { position: absolute; left: 0; right: 0; bottom: calc(100% + 8px); z-index: 8; padding: 16px 18px; border-radius: 14px; border: 1px solid var(--line-strong); background: var(--panel); box-shadow: 0 16px 40px rgb(0 0 0 / 28%); }
+/* (alpha.85: in the column's flow, under its button, never over the lines above: the owner, 2026-11-23, “这种overlapping是最基本的要解决的，无论哪里，都是不允许出现的”; the column fits itself, js/deck.js fitColumn) */
+.morectl > .controls { position: static; margin-top: 8px; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line-strong); background: var(--panel); }
+.fitscroll { box-sizing: border-box; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
 /* the paper's own number beside a readout's label */
 .ppill { display: inline-block; margin-left: 8px; padding: 3px 9px 4px; border-radius: 999px; border: 1.5px solid var(--measured); color: var(--measured); font: 600 17px/1.1 var(--mono); font-style: normal; white-space: nowrap; vertical-align: .1em; }
 .slide[data-level="3"]:not([data-kind]) .ros { gap: 8px; padding: 12px 18px; }
@@ -1987,7 +1992,7 @@ a.ppill.kb:is(:hover, :focus-visible) { background: color-mix(in srgb, var(--mea
   <div class="text">
     <div class="eyebrow">Table of contents</div>
     <h2>Exploration mode</h2>
-    <p class="why">Each study ends back here, where you pick the next. Place the windows, move the hand, slider and camera, switch the stages.</p>
+    <p class="why">Each study ends back here, where you pick the next. Move the slider and the camera, switch the stages.</p>
   </div>
   <div id="tocpv" aria-hidden="true">
     <div class="idle"><i></i><span>Point at an exploration<br>to preview it</span></div>
@@ -2000,7 +2005,7 @@ a.ppill.kb:is(:hover, :focus-visible) { background: color-mix(in srgb, var(--mea
     <div class="tocs">More Views</div>
     <div class="tocg"><a class="tocrow lit" href="#exp-kg2" data-name="Sensing Universe: More Views"><span class="tn">&#9678;</span><span class="tt"><b>Sensing Universe</b><small>Citations, similar technique, and gaps.</small></span></a></div>
     <div class="tocl">Explore Simulator</div>
-    <div class="tocsets" style="--n:2"><div class="tocset check"><div class="tocs">Check the Paper</div><div class="tocg one"><a class="tocrow q" href="#sim-real"><span class="tn">1</span><span class="tt"><b>Real-to-Simulation Gap</b><small>Does the model's error grow with distance and angle as in Fig. 7?</small></span></a><a class="tocrow q" href="#exp-ablation"><span class="tn">2</span><span class="tt"><b>Ablation study</b><small>What does each stage of the image pipeline add to the reading?</small></span></a><a class="tocrow q" href="#exp-related"><span class="tn">3</span><span class="tt"><b>Comparison with related work</b><small>How do the paper's baseline ArUco markers read the same move?</small></span></a></div></div><div class="tocset beyond"><div class="tocs">Go Beyond the Paper</div><div class="tocg one"><a class="tocrow q" href="#exp-general"><span class="tn">4</span><span class="tt"><b>Generalization study</b><small>How far and how steep can the camera be before the reading fails?</small></span></a><a class="tocrow q" href="#exp-physics"><span class="tn">5</span><span class="tt"><b>Physical conditions</b><small>Which matters most: the camera, the pattern, the speed or the light?</small></span></a><a class="tocrow q" href="#exp-array"><span class="tn">6</span><span class="tt"><b>Optimal array setup design</b><small>Where on the console should one to four windows go, so the hand never hides them all?</small></span></a></div></div></div>
+    <div class="tocsets" style="--n:2"><div class="tocset check"><div class="tocs">Check the Paper</div><div class="tocg one"><a class="tocrow q" href="#sim-real"><span class="tn">1</span><span class="tt"><b>Real-to-Simulation Gap</b><small>Does the model's error grow with distance and angle as in Fig. 7?</small></span></a><a class="tocrow q" href="#exp-ablation"><span class="tn">2</span><span class="tt"><b>Ablation study</b><small>What does each stage of the image pipeline add to the reading?</small></span></a><a class="tocrow q" href="#exp-related"><span class="tn">3</span><span class="tt"><b>Comparison with related work</b><small>How do the paper's baseline ArUco markers read the same move?</small></span></a></div></div><div class="tocset beyond"><div class="tocs">Go Beyond the Paper</div><div class="tocg one"><a class="tocrow q" href="#exp-general"><span class="tn">4</span><span class="tt"><b>Generalization study</b><small>How far and how steep can the camera be before the reading fails?</small></span></a><a class="tocrow q" href="#exp-physics"><span class="tn">5</span><span class="tt"><b>Physical conditions</b><small>Which matters most: the camera, the pattern, the speed or the light?</small></span></a></div></div></div>
     <div class="tocl">Done?</div>
     <button type="button" class="tocrow end" data-end="ask"><span class="tn">&#10003;</span><span class="tt"><b>End exploration</b><small>Finish here; you can still come back.</small></span></button>
   </div>
@@ -2050,10 +2055,10 @@ a.ppill.kb:is(:hover, :focus-visible) { background: color-mix(in srgb, var(--mea
       <p class="wplace">Home <span class="wtag">In Sensing World</span></p>
       <p class="why">a printed dial on the coffee table; the second phone's camera across the room reads its moiré's phase → the angle</p>
       <div class="wrel cue"><b>Similar use, other setups</b>
-        <div class="wkg" style="height:272px"><div class="wzone l"><i class="pill df">Device-free</i><span>nothing worn</span></div><div class="wzone r"><i class="pill db">Device-based</i><span>something worn</span></div>
-          <svg class="wedges" viewBox="0 0 600 272" width="600" height="272" aria-hidden="true"><defs><marker id="wa0" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z"/></marker></defs><path class="e u" data-a="zamora2024moirewidgets" style="--c:var(--mod-Optical, var(--prior))" d="M424 83 C390 83 398 157 364 157"/><path class="e u" data-a="peng2007beepbeep" style="--c:var(--mod-Acoustic, var(--prior))" d="M424 157 C390 157 398 157 364 157"/><path class="e u" data-a="michalevsky2014gyrophone" style="--c:var(--mod-Mechanical, var(--prior))" d="M176 102 C210 102 202 157 236 157"/><path class="e u" data-a="harrison2009abracadabra" style="--c:var(--mod-Magnetic, var(--prior))" d="M424 231 C390 231 398 157 364 157"/><path class="e u" data-a="wang2016fresnel" style="--c:var(--mod-RF, var(--prior))" d="M176 213 C210 213 202 157 236 157"/></svg>
-          <div class="whub" style="top:157px"><small>Similar use</small><span>Passive controls read by a camera</span></div>
-          <a class="wn r me" data-k="zamora2024moirewidgets" data-cap="MoiréWidgets: Gesture and input (CHI 2024)" href="#" target="_blank" rel="noopener" style="top:83px;--c:var(--mod-Optical, var(--prior));--d:0"><i></i><b>MoiréWidgets</b><span>a passive printed widget; a camera reads its Moiré fringes</span></a><a class="wn r" data-k="peng2007beepbeep" data-cap="BeepBeep: Localization and tracking (SenSys 2007)" href="#" target="_blank" rel="noopener" style="top:157px;--c:var(--mod-Acoustic, var(--prior));--d:1"><i></i><b>BeepBeep<sup title="also in this room in Sensing World">&#8962;</sup></b><span>two phones time each other’s beeps</span></a><a class="wn l" data-k="michalevsky2014gyrophone" data-cap="Gyrophone: Attack and security (USENIX Security 2014)" href="#" target="_blank" rel="noopener" style="top:102px;--c:var(--mod-Mechanical, var(--prior));--d:2"><i></i><b>Gyrophone<sup title="also in this room in Sensing World">&#8962;</sup></b><span>a phone’s gyroscope picks up speech</span></a><a class="wn r" data-k="harrison2009abracadabra" data-cap="Abracadabra: Gesture and input (UIST 2009)" href="#" target="_blank" rel="noopener" style="top:231px;--c:var(--mod-Magnetic, var(--prior));--d:3"><i></i><b>Abracadabra<sup title="also in this room in Sensing World">&#8962;</sup></b><span>a magnet worn on the finger, a watch’s magnetometer</span></a><a class="wn l" data-k="wang2016fresnel" data-cap="Wang et al.: Vital signs and health (UbiComp 2016)" href="#" target="_blank" rel="noopener" style="top:213px;--c:var(--mod-RF, var(--prior));--d:4"><i></i><b>Wang et al.<sup title="also in this room in Sensing World">&#8962;</sup></b><span>Wi-Fi’s Fresnel zones read breathing</span></a>
+        <div class="wkg" style="height:275px"><div class="wzone l"><i class="pill df">Device-free</i><span>nothing worn</span></div><div class="wzone r"><i class="pill db">Device-based</i><span>something worn</span></div>
+          <svg class="wedges" viewBox="0 0 600 275" width="600" height="275" aria-hidden="true"><defs><marker id="wa0" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z"/></marker></defs><path class="e u" data-a="zamora2024moirewidgets" style="--c:var(--mod-Optical, var(--prior))" d="M424 84 C390 84 398 159 364 159"/><path class="e u" data-a="peng2007beepbeep" style="--c:var(--mod-Acoustic, var(--prior))" d="M424 159 C390 159 398 159 364 159"/><path class="e u" data-a="michalevsky2014gyrophone" style="--c:var(--mod-Mechanical, var(--prior))" d="M176 102 C210 102 202 159 236 159"/><path class="e u" data-a="harrison2009abracadabra" style="--c:var(--mod-Magnetic, var(--prior))" d="M424 234 C390 234 398 159 364 159"/><path class="e u" data-a="wang2016fresnel" style="--c:var(--mod-RF, var(--prior))" d="M176 215 C210 215 202 159 236 159"/></svg>
+          <div class="whub" style="top:159px"><small>Similar use</small><span>Passive controls read by a camera</span></div>
+          <a class="wn r me" data-k="zamora2024moirewidgets" data-cap="MoiréWidgets: Gesture and input (CHI 2024)" href="#" target="_blank" rel="noopener" style="top:84px;--c:var(--mod-Optical, var(--prior));--d:0"><i></i><b>MoiréWidgets</b><span>a passive printed widget; a camera reads its Moiré fringes</span></a><a class="wn r" data-k="peng2007beepbeep" data-cap="BeepBeep: Localization and tracking (SenSys 2007)" href="#" target="_blank" rel="noopener" style="top:159px;--c:var(--mod-Acoustic, var(--prior));--d:1"><i></i><b>BeepBeep<sup title="also in this room in Sensing World">&#8962;</sup></b><span>two phones time each other’s beeps</span></a><a class="wn l" data-k="michalevsky2014gyrophone" data-cap="Gyrophone: Attack and security (USENIX Security 2014)" href="#" target="_blank" rel="noopener" style="top:102px;--c:var(--mod-Mechanical, var(--prior));--d:2"><i></i><b>Gyrophone<sup title="also in this room in Sensing World">&#8962;</sup></b><span>a phone’s gyroscope picks up speech</span></a><a class="wn r" data-k="harrison2009abracadabra" data-cap="Abracadabra: Gesture and input (UIST 2009)" href="#" target="_blank" rel="noopener" style="top:234px;--c:var(--mod-Magnetic, var(--prior));--d:3"><i></i><b>Abracadabra<sup title="also in this room in Sensing World">&#8962;</sup></b><span>a magnet worn on the finger, a watch’s magnetometer</span></a><a class="wn l" data-k="wang2016fresnel" data-cap="Wang et al.: Vital signs and health (UbiComp 2016)" href="#" target="_blank" rel="noopener" style="top:215px;--c:var(--mod-RF, var(--prior));--d:4"><i></i><b>Wang et al.<sup title="also in this room in Sensing World">&#8962;</sup></b><span>Wi-Fi’s Fresnel zones read breathing</span></a>
         </div>
         <div class="wfoot"><p class="wleg"><span class="lu"></span>similar use<span class="lsep"></span><span class="lm" style="--c:var(--mod-Acoustic)"></span>Acoustic<span class="lm" style="--c:var(--mod-RF)"></span>RF<span class="lm" style="--c:var(--mod-Optical)"></span>Optical<span class="lm" style="--c:var(--mod-Magnetic)"></span>Magnetic<span class="lm" style="--c:var(--mod-Mechanical)"></span>Mechanical<span class="lsep"></span>&#8962; also in this room</p><p class="wcap" aria-live="polite"></p></div>
       </div>
@@ -2098,9 +2103,7 @@ a.ppill.kb:is(:hover, :focus-visible) { background: color-mix(in srgb, var(--mea
     <dl class="fcw"><div class="ch"><dt>You change</dt><dd>the camera's distance and angles; the carriage</dd></div></dl>
     <div class="tabs"><span data-tab="0">0°/0°</span><span data-tab="1">0°/30°</span><span data-tab="2">30°/0°</span><span data-tab="3">30°/30°</span><span data-tab="4">60°/0°</span></div>
     <div class="controls">
-      <label class="slider"><span>Camera distance</span><input type="range" data-ctl="dist" min="20" max="220" step="10" value="100"><output data-val="dist" data-fmt="{v} cm">100 cm</output></label>
-      <label class="slider"><span>Swing toward X</span><input type="range" data-ctl="angX" min="0" max="60" step="5" value="0"><output data-val="angX" data-fmt="{v}°">0°</output></label>
-      <label class="slider"><span>Tilt toward Z</span><input type="range" data-ctl="angZ" min="0" max="30" step="5" value="0"><output data-val="angZ" data-fmt="{v}°">0°</output></label>
+      <div class="choice" role="group" aria-label="Camera distance"><span>Camera distance</span><button type="button" class="pick" data-ctl="dist" data-set="20" aria-pressed="false">20 cm</button><button type="button" class="pick" data-ctl="dist" data-set="60" aria-pressed="false">60 cm</button><button type="button" class="pick" data-ctl="dist" data-set="100" aria-pressed="true">100 cm</button><button type="button" class="pick" data-ctl="dist" data-set="140" aria-pressed="false">140 cm</button><button type="button" class="pick" data-ctl="dist" data-set="180" aria-pressed="false">180 cm</button><button type="button" class="pick" data-ctl="dist" data-set="220" aria-pressed="false">220 cm</button></div>
     </div>
     <details class="morectl"><summary>More controls</summary>
     <div class="controls">
@@ -2110,32 +2113,32 @@ a.ppill.kb:is(:hover, :focus-visible) { background: color-mix(in srgb, var(--mea
     </details>
     <div class="only" data-only="0">
       <div class="ros">
-        <div class="ro est"><span>Moiré RMSE at 140&nbsp;cm <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i> <i class="ppill" title="measured by the authors">paper 0.80&nbsp;mm</i></span><b data-ro="rmse">&ndash;</b></div>
-        <div class="ro"><span>ArUco RMSE at 140&nbsp;cm <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i> <i class="ppill" title="measured by the authors">paper 2.30&nbsp;mm</i></span><b data-ro="aruco">&ndash;</b></div>
+        <div class="ro est"><span>Moiré RMSE, this distance <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i></span><b data-ro="rmse">&ndash;</b></div>
+        <div class="ro"><span>ArUco RMSE, this distance <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i></span><b data-ro="aruco">&ndash;</b></div>
       </div>
     </div>
     <div class="only" data-only="1">
       <div class="ros">
-        <div class="ro est"><span>Moiré RMSE at 140&nbsp;cm <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i> <i class="ppill" title="measured by the authors">paper 1.40&nbsp;mm</i></span><b data-ro="rmse">&ndash;</b></div>
-        <div class="ro"><span>ArUco RMSE at 140&nbsp;cm <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i> <i class="ppill" title="measured by the authors">paper 4.25&nbsp;mm</i></span><b data-ro="aruco">&ndash;</b></div>
+        <div class="ro est"><span>Moiré RMSE, this distance <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i></span><b data-ro="rmse">&ndash;</b></div>
+        <div class="ro"><span>ArUco RMSE, this distance <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i></span><b data-ro="aruco">&ndash;</b></div>
       </div>
     </div>
     <div class="only" data-only="2">
       <div class="ros">
-        <div class="ro est"><span>Moiré RMSE at 140&nbsp;cm <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i> <i class="ppill" title="measured by the authors">paper 1.05&nbsp;mm</i></span><b data-ro="rmse">&ndash;</b></div>
-        <div class="ro"><span>ArUco RMSE at 140&nbsp;cm <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i> <i class="ppill" title="measured by the authors">paper 3.25&nbsp;mm</i></span><b data-ro="aruco">&ndash;</b></div>
+        <div class="ro est"><span>Moiré RMSE, this distance <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i></span><b data-ro="rmse">&ndash;</b></div>
+        <div class="ro"><span>ArUco RMSE, this distance <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i></span><b data-ro="aruco">&ndash;</b></div>
       </div>
     </div>
     <div class="only" data-only="3">
       <div class="ros">
-        <div class="ro est"><span>Moiré RMSE at 140&nbsp;cm <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i> <i class="ppill" title="measured by the authors">paper 1.30&nbsp;mm</i></span><b data-ro="rmse">&ndash;</b></div>
-        <div class="ro"><span>ArUco RMSE at 140&nbsp;cm <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i> <i class="ppill" title="measured by the authors">paper 3.30&nbsp;mm</i></span><b data-ro="aruco">&ndash;</b></div>
+        <div class="ro est"><span>Moiré RMSE, this distance <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i></span><b data-ro="rmse">&ndash;</b></div>
+        <div class="ro"><span>ArUco RMSE, this distance <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i></span><b data-ro="aruco">&ndash;</b></div>
       </div>
     </div>
     <div class="only" data-only="4">
       <div class="ros">
-        <div class="ro est"><span>Moiré RMSE at 140&nbsp;cm <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i> <i class="ppill" title="measured by the authors">paper 4.15&nbsp;mm</i></span><b data-ro="rmse">&ndash;</b></div>
-        <div class="ro"><span>ArUco RMSE at 140&nbsp;cm <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i> <i class="ppill" title="measured by the authors">paper 4.50&nbsp;mm</i></span><b data-ro="aruco">&ndash;</b></div>
+        <div class="ro est"><span>Moiré RMSE, this distance <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i></span><b data-ro="rmse">&ndash;</b></div>
+        <div class="ro"><span>ArUco RMSE, this distance <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i></span><b data-ro="aruco">&ndash;</b></div>
       </div>
     </div>
     <div class="ros">
@@ -2229,7 +2232,7 @@ a.ppill.kb:is(:hover, :focus-visible) { background: color-mix(in srgb, var(--mea
 <!-- 29 · Exploration 4 · Generalization study -->
 <section class="slide column sim" id="exp-general" data-name="Exploration 4 · Generalization study" data-level="3" data-part="3 · Explore" data-home="explore" data-marks="public:skip authors:close researchers:close downstream:close" data-camera="hand">
   <div class="text">
-    <div class="eyebrow set beyond">Go Beyond the Paper &middot; 1 of 3</div>
+    <div class="eyebrow set beyond">Go Beyond the Paper &middot; 1 of 2</div>
     <h2>Generalization study</h2>
     <p class="ask"><b>Question</b> <span class="more">How far and how steep can the camera be before the reading fails?<button type="button" class="tip" aria-label="More">i</button><span class="tipbox" role="tooltip">Fig. 7 tests 20 to 220&nbsp;cm, and up to 60&deg; in X and 30&deg; in Z. Here the camera goes to 400&nbsp;cm and 75&deg;.</span></span></p>
     <dl class="fcw"><div class="ch"><dt>You change</dt><dd>the camera's distance and angle</dd></div></dl>
@@ -2263,7 +2266,7 @@ a.ppill.kb:is(:hover, :focus-visible) { background: color-mix(in srgb, var(--mea
 <!-- 30 · Exploration 5 · Physical conditions -->
 <section class="slide column sim" id="exp-physics" data-name="Exploration 5 · Physical conditions" data-level="3" data-part="3 · Explore" data-home="explore" data-marks="public:skip researchers:close downstream:close" data-steps="3" data-camera="hand">
   <div class="text">
-    <div class="eyebrow set beyond">Go Beyond the Paper &middot; 2 of 3</div>
+    <div class="eyebrow set beyond">Go Beyond the Paper &middot; 2 of 2</div>
     <h2>Physical conditions</h2>
     <p class="ask"><b>Question</b> <span class="more">Which matters most: the camera, the pattern, the speed or the light?<button type="button" class="tip" aria-label="More">i</button><span class="tipbox" role="tooltip">Each tab changes one thing the paper fixes, with the camera at 100&nbsp;cm, 0&deg;/0&deg;. The paper's error there is 0.3&nbsp;mm (Fig. 7).</span></span></p>
     <dl class="fcw"><div class="ch"><dt>You change</dt><dd>one condition, a tab each</dd></div></dl>
@@ -2334,43 +2337,7 @@ a.ppill.kb:is(:hover, :focus-visible) { background: color-mix(in srgb, var(--mea
   <div class="capsule"></div>
 </section>
 
-<!-- 31 · Exploration 6 · Optimal array setup design -->
-<section class="slide sim" id="exp-array" data-name="Exploration 6 · Optimal array setup design" data-level="3" data-part="3 · Explore" data-home="explore" data-marks="public:skip researchers:close educators:skip downstream:close" data-camera="hand">
-  <div class="text">
-    <div class="eyebrow set beyond">Go Beyond the Paper &middot; 3 of 3</div>
-    <h2>Optimal array setup design</h2>
-    <p class="ask"><b>Question</b> <span class="more">Where on the console should one to four windows go, so the hand never hides them all?<button type="button" class="tip" aria-label="More">i</button><span class="tipbox" role="tooltip">The camera reads a window only while it sees its four corner markers, and a hand over the console hides what lies under it and its forearm. §5.2 suggests several windows that move together, so one is still seen.</span></span></p>
-    <p class="why box"><span class="more"><b>A Moiré window</b> the printed patch the camera reads: two line layers, four markers.<button type="button" class="tip" aria-label="More">i</button><span class="tipbox" role="tooltip">Each widget carries one (Fig. 2): the two layers' lines make wide bands that move with the widget, and the colour markers at its corners let the camera locate it. Enlarged at the left of the plot.</span></span></p>
-    <dl class="fcw"><div class="fx"><dt>Fixed</dt><dd>a camera on AR glasses</dd></div><div class="ch"><dt>You change</dt><dd>where 1 to 4 windows go, their size</dd></div><div class="wa"><dt>You watch</dt><dd>which windows the hand hides</dd></div></dl>
-    <ol class="turns">
-      <li class="turn" data-n="1" data-at="panel:array" data-by="cue"><span class="n">1</span><span class="tsay"><b class="yt">Your turn</b> Drag the hand over the console.</span></li>
-      <li class="turn has" data-n="2" data-at="act:layout:paper"><span class="n">2</span><span class="tsay"><b class="yt">Your turn</b> Press</span><span class="tctl controls"><button type="button" class="btn preset" data-act="layout:paper">The paper's one</button></span><span class="more tmore"><button type="button" class="tip" aria-label="More">i</button><span class="tipbox" role="tooltip">One window, on the slider's printed lines, as on the paper's console (Fig. 8): the hand hides it more often.</span></span></li>
-      <li class="turn" data-n="3" data-at="panel:array"><span class="n">3</span><span class="tsay"><b class="yt">Your turn</b> Drag a window to a new place.</span></li>
-      <li class="turn has" data-n="4" data-at="act:layout:three"><span class="n">4</span><span class="tsay"><b class="yt">Your turn</b> Press</span><span class="tctl controls"><button type="button" class="btn preset" data-act="layout:three">Three windows</button></span><span class="more tmore"><button type="button" class="tip" aria-label="More">i</button><span class="tipbox" role="tooltip">Three windows follow the slider's move at three places on the board. A hand hides at most one or two of them.</span></span></li>
-    </ol>
-    <button type="button" class="allctl">Show all controls</button>
-    <div class="controls">
-      <label class="slider"><span>Windows</span><input type="range" data-ctl="windows" min="1" max="4" step="1" value="3"><output data-val="windows" data-fmt="{v}">3</output></label>
-      <label class="slider"><span>Window size</span><input type="range" data-ctl="win" min="15" max="45" step="5" value="30"><output data-val="win" data-fmt="{v} mm">30 mm</output></label>
-    </div>
-    <details class="morectl"><summary>More controls</summary>
-    <div class="controls">
-      <button type="button" class="switch" data-ctl="auto" aria-pressed="true"><i></i>Auto move</button>
-    </div>
-    </details>
-    <div class="ros">
-      <div class="ro est"><span>Windows seen <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i></span><b data-ro="seen">&ndash;</b></div>
-      <div class="ro"><span>Window area under the hand <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i></span><b data-ro="hid">&ndash;</b></div>
-      <div class="ro"><span>Error with the hand here <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i></span><b data-ro="err">&ndash;</b></div>
-      <div class="ro"><span>Board a window reads from <i class="pdot sim" role="img" title="simulated by the model" aria-label="simulated"></i></span><b data-ro="cover">&ndash;</b></div>
-    </div>
-    <p class="result"><b>What you saw</b> <span class="more"><span data-ro="saw"></span><button type="button" class="tip" aria-label="More">i</button><span class="tipbox" role="tooltip">The paper names this and does not build it; its console has one window a widget, kept out from between the fingertip and the camera. Several windows here are averaged, their errors taken as independent.</span></span><span class="rq"><span class="rqt"><span class="pq" data-src="§5.2">multiple Moiré windows that follow the same movement but are situated at different locations</span></span> <span class="pq pcite" data-src="§5.2" data-pq="multiple Moiré windows that follow the same movement but are situated at different locations"></span></span></p>
-  </div>
-  <div class="panel shown helped" data-panel="array" style="left:780px;top:170px;width:1020px;height:820px"><div class="pt">the console from above, <span class="lc">cm</span> &middot; colour: error with the hand there<button type="button" class="tip" aria-label="How to read this window">i</button></div><canvas></canvas><div class="wtip tip-over" role="tooltip"><p><b>It shows</b> The console's board from above, its windows, and the part the hand hides from the camera, so a window's place decides if it is read.</p><p><b>How to read it</b> The grey shape is the hand and forearm, a crossed window is hidden, and the colour gives the error with the hand at each place.</p></div></div>
-  <div class="capsule"></div>
-</section>
-
-<!-- 32 · All pages -->
+<!-- 31 · All pages -->
 <section class="slide" id="all" data-name="All pages" data-kind="all" data-level="3" data-part="3 · Explore">
   <div class="text" style="width:1680px">
     <div class="eyebrow">All pages</div>
@@ -2407,14 +2374,13 @@ a.ppill.kb:is(:hover, :focus-visible) { background: color-mix(in srgb, var(--mea
         <li><a href="#exp-related"><b></b><span>Comparison with related work<small></small></span></a></li>
         <li><a href="#exp-general"><b></b><span>Generalization study<small></small></span></a></li>
         <li><a href="#exp-physics"><b></b><span>Physical conditions<small></small></span></a></li>
-        <li><a href="#exp-array"><b></b><span>Optimal array setup design<small></small></span></a></li>
         <li><a href="#open"><b></b><span>What This Model Leaves Open<small></small></span></a></li>
       </ol></div>
   </div>
   <div class="credit"><a href="#start">What you will learn</a> · <a href="#title">The title page</a> · <a href="#sense2sim">How Sense2Sim Works</a></div>
 </section>
 
-<!-- 33 · What This Model Leaves Open -->
+<!-- 32 · What This Model Leaves Open -->
 <section class="slide" id="open" data-name="What This Model Leaves Open" data-kind="open" data-level="3" data-part="3 · Explore">
   <div class="text" style="width:1680px">
     <div class="eyebrow">Limits of this model</div>
@@ -2435,7 +2401,7 @@ a.ppill.kb:is(:hover, :focus-visible) { background: color-mix(in srgb, var(--mea
   </div>
 </section>
 
-<!-- 34 · How Sense2Sim Works -->
+<!-- 33 · How Sense2Sim Works -->
 <section class="slide" id="sense2sim" data-name="How Sense2Sim Works" data-kind="about" data-level="3" data-part="3 · Explore" data-prev="explore" data-steps="5">
   <div class="text" style="width:1680px">
     <h2>How Sense2Sim Works</h2>
@@ -2456,9 +2422,9 @@ a.ppill.kb:is(:hover, :focus-visible) { background: color-mix(in srgb, var(--mea
       <li class="abopen reveal" data-step="5">Click a part to open it.</li>
     </ol>
     <div class="abframe reveal" data-step="1"><span class="abname"><b>Sense2Sim</b>the whole system: it turns the paper into an interactive simulator</span></div>
-    <div class="abc reveal" data-about="universe" data-step="2" style="left:545px;top:470px;width:310px;height:356px"><div class="abpv" data-live="exp-kg" tabindex="0" role="button" aria-label="Enlarge the preview of Sensing Universe"></div><span class="abhead"><span class="abn">1</span></span><h3>Sensing Universe</h3><p>a knowledge base/graph of related ubiquitous sensing research</p></div>
-    <div class="abc reveal" data-about="assets" data-step="3" style="left:940px;top:280px;width:330px;height:330px"><div class="abpv" tabindex="0" role="button" aria-label="Enlarge the preview of Sensing 3D Assets"><img src="about/assets.jpg" alt="" decoding="async"></div><span class="abhead"><span class="abn">2</span></span><h3>Sensing 3D Assets</h3><p>reusable 3D models of devices, sensors, subjects, and objects</p></div>
-    <div class="abc reveal" data-about="world" data-step="4" style="left:940px;top:686px;width:330px;height:330px"><div class="abpv" data-live="exp-world" tabindex="0" role="button" aria-label="Enlarge the preview of Sensing World"></div><span class="abhead"><span class="abn">3</span></span><h3>Sensing World</h3><p>3D scenes of the places where sensing is used</p></div>
+    <div class="abc reveal go" data-about="universe" data-step="2" style="left:545px;top:470px;width:310px;height:356px"><div class="abpv" data-live="exp-kg"></div><span class="abhead"><span class="abn">1</span><a class="abgo" href="https://ambient-intelligence-lab-umich-eecs.github.io/Sense2Sim_Universe/pages/universe/index.html" target="_blank" rel="noopener" aria-label="Open Sensing Universe">Open &#8599;</a></span><h3>Sensing Universe</h3><p>a knowledge base/graph of related ubiquitous sensing research</p></div>
+    <div class="abc reveal go" data-about="assets" data-step="3" style="left:940px;top:280px;width:330px;height:330px"><div class="abpv"><img src="about/assets.jpg" alt="" decoding="async"></div><span class="abhead"><span class="abn">2</span><a class="abgo" href="https://ambient-intelligence-lab-umich-eecs.github.io/Sense2Sim_Assets/" target="_blank" rel="noopener" aria-label="Open Sensing 3D Assets">Open &#8599;</a></span><h3>Sensing 3D Assets</h3><p>reusable 3D models of devices, sensors, subjects, and objects</p></div>
+    <div class="abc reveal go" data-about="world" data-step="4" style="left:940px;top:686px;width:330px;height:330px"><div class="abpv" data-live="exp-world"></div><span class="abhead"><span class="abn">3</span><a class="abgo" href="https://ambient-intelligence-lab-umich-eecs.github.io/Sense2Sim_Universe/pages/world/index.html#home" target="_blank" rel="noopener" aria-label="Open Sensing World">Open &#8599;</a></span><h3>Sensing World</h3><p>3D scenes of the places where sensing is used</p></div>
     <div class="abc reveal sim go" data-about="sim" data-step="5" style="left:1355px;top:498px;width:430px;height:300px"><span class="abhead"><span class="abn">4</span><a class="abgo" href="#title" aria-label="Open Physical Interactive Simulator of Specific Research">Open &rsaquo;</a></span><h3>Physical Interactive Simulator of Specific Research</h3><p>this deck: the paper as a model to try</p></div>
     <svg class="ablines" viewBox="0 0 1920 1080" width="1920" height="1080" aria-hidden="true"><g data-step="1"><path d="M472 275 L 514 275" pathLength="1"/><polygon points="520,275 506,267 506,283"/></g><g data-step="3"><path d="M857 568 C 897 568, 897 445, 934 445" pathLength="1"/><polygon points="940,445 926,437 926,453"/></g><g data-step="4"><path d="M857 728 C 897 728, 897 851, 934 851" pathLength="1"/><polygon points="940,851 926,843 926,859"/></g><g data-step="5"><path d="M857 648 L 1091 648 M 1119 648 L 1349 648" pathLength="1"/><polygon points="1355,648 1341,640 1341,656"/></g><g data-step="4"><path d="M1105 612 L 1105 680" pathLength="1"/><polygon points="1105,686 1097,672 1113,672"/></g><g data-step="5"><path d="M1272 445 C 1312 445, 1312 578, 1349 578" pathLength="1"/><polygon points="1355,578 1341,570 1341,586"/></g><g data-step="5"><path d="M1272 851 C 1312 851, 1312 718, 1349 718" pathLength="1"/><polygon points="1355,718 1341,710 1341,726"/></g></svg>
   </div>
@@ -5907,7 +5873,7 @@ function phonePlace(ph, S) {
   if (!ph) return null;
   let aim, n, far = [0, 0, -1];
   if (S.rig) { aim = RIG.win(S.travel || 0); n = RIG.normal; }
-  else if (S.widget === "console") { aim = CONSOLE.slider.at(S.travel || 0); n = [0, 1, 0]; far = CONSOLE.far; }
+  else if (S.widget === "console") { aim = CONSOLE.slider.at(0); n = [0, 1, 0]; far = CONSOLE.far; } // fixed: the camera stands still while the reader moves the slider (Brian, 2026-11-23)
   else if (S.widget === "button") { aim = add3(WIDGET_AT.button, [0, 1.9, 1.5]); n = [0, 0, 1]; }
   else if (S.widget === "switch") { aim = add3(WIDGET_AT.switch, [0, 1.0, 0.7]); n = [0, 0, 1]; }
   else if (S.widget === "dial") { aim = add3(WIDGET_AT.dial, [0, 0.4, 0]); n = [0, 1, 0]; }
@@ -8111,8 +8077,8 @@ const SIM_MODEL = {
 // Eq. 1) and the readings driving a song: the slider its volume, the dial its speed, the button play and stop. The
 // reader drags the slider along its line (the page's drag), presses the button (a press handle) and turns the dial
 // (a turn handle), the two read out in the column, not set there (the reader, 2026-11-21); the camera's distance is
-// a slider; with the switch "Camera" the reader's own hand moves the slider or turns the dial, one picked at a time
-// (USE_PICK; template/js/reader.js). Until the reader takes it the slider moves by itself.
+// a slider; with the switch "Camera" the reader's own hand moves the slider only (template/js/reader.js; Brian,
+// 2026-11-23). Until the reader takes it the slider moves by itself.
 // What the chain reads: the slider's window as it is (the paper's 1-D translation); the button's window, its press
 // depth (1-D translation); the dial's radial lines as lines along the arc where their spacing is the slider's
 // (6.5° at r = Ta / 6.5° = 5.7 mm: the chain reads them as the linear pair, assumed). The camera looks down at 45°
@@ -8175,12 +8141,9 @@ defineSim("use", {
   },
   onReset: () => { USE.playing = false; USE.latch = false; USE.read = null; USE.x = null; USE.cam = null; USE.hold = null; },
 });
-// ---- the switch "Camera" (template/js/reader.js): the reader's hand moves one widget at a time (the reader,
-// 2026-11-21: "I don't know which I am controlling"). Each time the hand comes into the picture its first move picks
-// it: slid sideways 1.5 cm, the slider (along its line); turned 15°, the dial (about its axis, the hand's roll);
-// a widget grabbed with the mouse while the camera is on is picked too. It keeps that one until the hand leaves the
-// picture; the other stays still, the scene's hand stays on it, and the page names it. The button is the mouse's
-// (pressed on its grip: the owner, 2026-11-21, in template/js/reader.js).
+// ---- the switch "Camera" (template/js/reader.js): the reader's hand moves the slider, and only the slider, at once,
+// with nothing to pick first (Brian, 2026-11-23: the dial by the hand's roll and picking a widget were too hard).
+// The dial and the button stay the mouse's (their grips in the scene), the camera on or off.
 const USE_PICK = { cm: 1.5, turn: 15 };
 const useCamOn = () => typeof readerOn === "function" && readerOn();
 const useGrip = () => (typeof READER !== "undefined" && READER.grip && READER.grip.id === "use" ? READER.grip : null);
@@ -8190,11 +8153,7 @@ function useHold() { const g = useGrip(); if (g && g !== USE.hold) { USE.hold = 
 // the dial set by its handle: the mouse's ring, or the hand's roll, which moves it only once the dial is picked
 function useDialSet(st, v) {
   const mouse = typeof HDRAG !== "undefined" && !!HDRAG;
-  if (useCamOn() && !mouse) {
-    useHold();
-    if (USE.cam === "slider") return;
-    if (!USE.cam) { const g = typeof READER !== "undefined" ? READER.gest : null; if (!g || Math.abs(g.turned) < USE_PICK.turn) return; usePick("dial"); }
-  } else if (useCamOn()) usePick("dial");
+  if (useCamOn() && !mouse) return; // the hand's roll turns nothing here: the dial is the mouse's
   setControl(st.id, "dial", v);
 }
 const USE_NAMES = { slider: "the slider", dial: "the dial" };
@@ -8205,22 +8164,18 @@ PAGES.use = {
   drag: "line", plane: [0, 1, 0],
   // the camera's own subject here (template/js/reader.js, PAGES[id].camera): the slider, where the reader puts it, in
   // cm along its line, its sign so the view's right is the right (the line runs along x, across the view); the cap
-  // drawn follows at a hand's pace (useFrame). It moves only while the slider is the hand's pick (USE_PICK)
+  // drawn follows at a hand's pace (useFrame). The hand moves it at once, nothing picked first
   camera: {
     drag: "line",
     at() { return [useSign() * CONSOLE.slider.travel(SIMS.use.rest) / 10, 0]; },
-    place([r]) {
-      const g = useHold();
-      if (!USE.cam && g && Math.abs(r - g.rest[0]) >= USE_PICK.cm) usePick("slider");
-      if (USE.cam === "slider") setRest(SIMS.use, CONSOLE.slider.at(useSign() * r * 10));
-    },
-    stage() { return onStage(USE.cam === "dial" ? CONSOLE.dial() : SIMS.use.pos); },
+    place([r]) { usePick("slider"); setRest(SIMS.use, CONSOLE.slider.at(useSign() * r * 10)); },
+    stage() { return onStage(SIMS.use.pos); },
   },
   // the button pressed in along its axis, the dial turned about its own (template/js/handles.js): the only way to
   // set them (their values are readouts in the column)
   handles: [
     { dof: "press", ctl: "press", at: (st) => CONSOLE.button(st.ctl.press), axis: [0, -1, 0], range: [0, 4], span: 150, label: (st) => `${(+st.ctl.press).toFixed(1)} mm` },
-    { dof: "turn", ctl: "dial", at: () => CONSOLE.dial(), axis: [0, 1, 0], r: 3.2, zero: [-1, 0, 0], range: [0, USE_MAP.dialMax], set: useDialSet, label: (st) => `${Math.round(st.ctl.dial)}°` },
+    { dof: "turn", ctl: "dial", camera: false, at: () => CONSOLE.dial(), axis: [0, 1, 0], r: 3.2, zero: [-1, 0, 0], range: [0, USE_MAP.dialMax], set: useDialSet, label: (st) => `${Math.round(st.ctl.dial)}°` },
   ],
   update(S, { dt }) {
     const st = SIMS.use, H = useFrame(st, dt), x = CONSOLE.slider.travel(H), r = lastRec(st.sim);
@@ -8232,14 +8187,14 @@ PAGES.use = {
     S.widget = "console"; S.explode = 0; S.moireTex = true; S.rig = false; S.prior = null;
     S.travel = x; S.press = st.sim.now ? st.sim.now.p : +st.ctl.press; S.dial = st.sim.now ? st.sim.now.th : +st.ctl.dial;
     S.phone = { dist: +st.ctl.dist, angX: USE_CAM.angX, angZ: USE_CAM.angZ };
-    // the scene's hand: on the widget the reader moves last; with the camera on, on the hand's pick alone (USE_PICK)
-    const cam = useCamOn(), at = cam ? USE.cam || USE.last : st.ctl.auto ? "slider" : USE.last;
+    // the scene's hand: on the widget the reader moves last; with the camera on, on the slider
+    const cam = useCamOn(), at = cam ? "slider" : st.ctl.auto ? "slider" : USE.last;
     S.hand = { at, pose: at === "dial" && (cam || !st.ctl.auto) ? "pinch" : "point" };
     S.cam = { ...USE_VIEW, t: USE_VIEW.t.slice() };
     // each thing the page is about named, in the air over it, clear of the grips' words (Brian, 2026-11-21); with the
     // camera on, the widget the hand moves named so, lit
     const ph = phonePlace(S.phone, S), tip = handPoint(S.hand.at, S);
-    const name = (w) => (cam && USE.cam === w ? { text: `${w} · your hand`, cls: "" } : { text: w, cls: "dim" });
+    const name = (w) => (cam && w === "slider" ? { text: `${w} · your hand`, cls: "" } : { text: w, cls: "dim" });
     S.labels.push(
       { p: add3(CONSOLE.dial(), [0, 2.2, 0]), ...name("dial"), dy: -18, key: "name-dial" },
       { p: add3(CONSOLE.button(0), [0, 2.2, 0]), text: "button", cls: "dim", dy: -30, dx: 10, key: "name-button" },
@@ -8251,7 +8206,7 @@ PAGES.use = {
   },
   status() {
     if (!useCamOn()) return "the camera reads the console's three windows";
-    return USE.cam ? `Camera: your hand moves ${USE_NAMES[USE.cam]} only` : "Camera: slide your hand for the slider, turn it for the dial";
+    return "Camera: your hand moves the slider; the dial and the button take the mouse";
   },
   ro() {
     const R = USE.read, st = SIMS.use, set = { dial: `${Math.round(+st.ctl.dial || 0)}°`, press: `${(+st.ctl.press || 0).toFixed(1)} mm` };
@@ -8271,8 +8226,8 @@ PAGES.use = {
     if (st.drag) { USE.last = "slider"; useTask("slider"); if (useCamOn()) usePick("slider"); }
     // a grip taken with the mouse (template/js/handles.js, HDRAG): the scene's hand goes to that widget at once
     const H = typeof HDRAG !== "undefined" && HDRAG && HDRAG.st === st ? HDRAG.h : null;
-    if (H) { const w = H.ctl === "dial" ? "dial" : "button"; if (!useCamOn()) USE.last = w; else if (w === "dial") usePick("dial"); }
-    if (useGrip() && USE.cam === "slider") useTask("slider");
+    if (H) { const w = H.ctl === "dial" ? "dial" : "button"; if (!useCamOn()) USE.last = w; }
+    if (useGrip()) useTask("slider");
     if (typeof readerOn === "function" && readerOn()) useTask("camera");
   },
   panel: { mixer: drawMixer },
@@ -8350,7 +8305,9 @@ const f7Nudge = (st, dir, fine) => { const A = f7Axis(); st.x = clamp(A.travel(s
 // and the phone at its distance both in the space over the windows (scene/scene.js, phonePlace; the template's camera
 // sits at t + d·(sin az, ·, cos az)); shared with evidence/related.js
 function rigView(S, win) {
-  const P = typeof phonePlace === "function" ? phonePlace(S.phone, S) : null, a = win, b = P ? P.pos : win;
+  // framed for the phone at the farthest of Fig. 7's distances, the view fixed: a nearer phone is seen nearer (Brian,
+  // 2026-11-23: framed on the phone where it is, it always looked the same distance away)
+  const P = typeof phonePlace === "function" && S.phone ? phonePlace({ ...S.phone, dist: 220 }, S) : null, a = win, b = P ? P.pos : win;
   // framed on the midpoint of the rig and the phone (its height too: a phone tilted toward Z stands high), far enough
   // that both stay inside the space between the result card (top, to y ≈ 290) and the windows (from y ≈ 640–690), and
   // right of the text column (page review, round 2, P1)
@@ -8366,11 +8323,11 @@ function rigView(S, win) {
 function rigNames(S, x, key, { carriage = false, read = null } = {}) {
   const W = typeof RIG_AXIS !== "undefined" ? RIG_AXIS.at(x) : null; if (!W) return;
   const local = (p) => (typeof rigWorld === "function" ? rigWorld(p) : null), wy = typeof RIG_GEOM !== "undefined" ? RIG_GEOM.winY : 14.5;
-  S.labels.push({ p: [W[0], W[1] - 2.6, W[2]], text: "Moiré window", cls: read === "aruco" ? "dim" : "accent", key: key + "-win", dx: 70, dy: 46, anchor: "left" });
+  S.labels.push({ p: [W[0], W[1] - 2.6, W[2]], text: "Moiré window", cls: read === "aruco" ? "dim" : "accent", key: key + "-win", dx: 30, dy: 34, anchor: "left" });
   if (read) { const A = local([x / 10 - 4.6, wy - 3.4, 1.6]); if (A) S.labels.push({ p: A, text: "ArUco markers", cls: read === "aruco" ? "accent" : "dim", key: key + "-aru", dx: -50, dy: 60, anchor: "right" }); }
   if (!carriage) { const Cl = local([x / 10 - 1.5, wy - 9.6, 2.0]); if (Cl) S.labels.push({ p: Cl, text: "caliper", cls: "dim", key: key + "-cal", dx: -60, dy: 50, anchor: "right" }); }
   const P = typeof phonePlace === "function" ? phonePlace(S.phone, S) : null;
-  if (P) S.labels.push({ p: [P.pos[0], P.pos[1] + 9, P.pos[2]], text: "camera", cls: "dim", key: key + "-cam", dy: -24 });
+  if (P) S.labels.push({ p: [P.pos[0], P.pos[1] + 18, P.pos[2]], text: "phone camera", cls: "dim", key: key + "-cam", dy: -10 }); // (in the air over the phone: at the view framed for 220 cm the phone and its tripod are too small to carry the point)
 }
 const F7_TRAVEL = 20, F7_PERIOD = 16; // the caliper's move (§4.2): 0 → 20 mm and back, 2.5 mm/s
 const f7AutoX = (tau) => (F7_TRAVEL / 2) * (1 - Math.cos((TAU * tau) / F7_PERIOD));
@@ -8465,9 +8422,11 @@ PAGES["sim-real"] = {
   },
   ro() {
     const st = SIMS["sim-real"], P = F7_PANELS[F7.tab], out = {};
-    const at = (m) => { const p = f7Pts(P, m).find((q) => q && q[0] === F7_AT); return p ? f7mm(p[1]) : "running…"; };
+    // at the distance the reader picked (one of Fig. 7's six), at the tab's angles: the reader's own setting's trial
+    const at = (m) => { const r = f7Get(m, +st.ctl.dist, P.ax, P.az); return r ? f7mm(r.rmse) : "running…"; };
     out.rmse = at("moire"); out.aruco = at("aruco");
     out.in = `${f7X(st).toFixed(1)} mm`;
+    out.angX = `${Math.round(+st.ctl.angX)}°`; out.angZ = `${Math.round(+st.ctl.angZ)}°`; // the tab's angles, read out (not set here)
     out.err = f7Live.fast() ? "too fast" : f7mm(f7Live.err); out.arucoErr = f7mm(f7Live.aerr);
     // what the panel showed, once its points have landed and the reader has tried something
     out.saw = ""; out.sawQ = P.ax >= 60 ? "wide" : "far";
@@ -9138,8 +9097,15 @@ function uvDraw(g, ctx, w, h) {
   uniGlow(g, mx, my, (28 + 4 * Math.sin(t * 5)) * r0, col);
   g.globalAlpha = 1; g.font = `700 36px ${FONT}`; g.textAlign = "left"; g.fillStyle = PAL.ink;
   if (UV.gapA > 0.5) { g.textAlign = "center"; uvT(g, KG.name, mx, my + 58); }
-  else { uvT(g, KG.name, mx + 32, my - 14); g.font = `500 20px ${MONO}`; g.fillStyle = PAL.ink2; uvT(g, `${me.p.venue || me.p.year || ""}`, mx + 32, my + 16); }
-  taken.push([mx - 32, my - 52, mx + 250, my + 26]);
+  else {
+    // (on the star's left where its name would run past the window's right edge: WindDancer's, near the Acoustic rim)
+    const vw = `${me.p.venue || me.p.year || ""}`, nw = g.measureText(KG.name).width; g.font = `500 20px ${MONO}`; const ww = Math.max(nw, g.measureText(vw).width); g.font = `700 36px ${FONT}`;
+    const right = g.canvas.width / ((g.getTransform && g.getTransform().a) || 1), left = mx + 32 + ww > right - 16;
+    g.textAlign = left ? "right" : "left"; const lx = left ? mx - 32 : mx + 32;
+    uvT(g, KG.name, lx, my - 14); g.font = `500 20px ${MONO}`; g.fillStyle = PAL.ink2; uvT(g, vw, lx, my + 16); g.textAlign = "left";
+    taken.push(left ? [mx - 40 - ww, my - 52, mx + 32, my + 26] : [mx - 32, my - 52, mx + 40 + ww, my + 26]);
+  }
+  if (UV.gapA > 0.5) taken.push([mx - 32, my - 52, mx + 250, my + 26]);
   // names: the selected paper's, the one pointed at, and each view's most cited, where they cover no other
   // (a paper picked or pointed at is always named: at the first place round its star that covers no other name,
   // the paper's own first of all: beside it, under it, over it, then further off to the left, over and under, a
@@ -10638,6 +10604,32 @@ function guideTarget(s, at) {
 // More controls (pages.mjs, morectl) folds again at a press outside it: open, it lies over the lines above, the
 // reader's next step among them (run 31)
 document.addEventListener("pointerdown", (e) => { for (const d of document.querySelectorAll("details.morectl[open]")) if (!d.contains(e.target)) d.open = false; }, true);
+// The text column never runs into what stands under it (alpha.85; the owner, 2026-11-23: “这种overlapping是最基本的要解决的，
+// 无论哪里，都是不允许出现的”): where its controls, More controls opened, all its controls shown, or its readouts reach the
+// page's status line (.capsule) or the bar, the readouts' block, then the controls', take what room is left and scroll.
+// Run as a page shows, as More controls or “Show all controls” open, and whenever the column's size changes.
+function fitColumn(s) {
+  const t = s && s.querySelector(":scope > .text, .only:not([hidden]) > .text"); if (!t || !t.getClientRects().length) return;
+  const st = stage.getBoundingClientRect(), k = st.width / 1920 || 1, Y = (r) => (r - st.top) / k;
+  // the limit: a status line under the column (below its top, across its width), else the bar; a capsule above the
+  // column or beside it is no limit (SwimHR, 2026-11-23: a capsule at the top clipped its controls)
+  const tr = t.getBoundingClientRect(), under = [...s.querySelectorAll(".capsule")].filter((c) => { if (!c.getClientRects().length || getComputedStyle(c).visibility === "hidden") return false; const r = c.getBoundingClientRect(); return r.top > tr.top + 200 * k && r.left < tr.right && r.right > tr.left; });
+  const limit = Math.min(1000, ...under.map((c) => Y(c.getBoundingClientRect().top))) - 12;
+  const flow = () => Math.max(...[...t.children].filter((c) => c.getClientRects().length && getComputedStyle(c).position !== "absolute").map((c) => Y(c.getBoundingClientRect().bottom)), 0);
+  // (the readouts first, then the controls, then the steps; each down to a few lines, then, if the column is still too
+  // tall, each down to two lines)
+  const fits = [".ros", ".morectl[open] > .controls", ":scope > .controls", ".turns"].flatMap((q) => [...t.querySelectorAll(q)]).filter((e) => e.getClientRects().length);
+  for (const e of fits) { e.style.maxHeight = ""; e.classList.remove("fitscroll"); }
+  for (const least of [96, 56]) for (const e of fits) {
+    const over = flow() - limit; if (over <= 0) return;
+    const h = e.getBoundingClientRect().height / k; if (h <= least) continue;
+    e.style.maxHeight = Math.max(least, Math.floor(h - over)) + "px"; e.classList.add("fitscroll");
+  }
+}
+{ let fitT = 0; const fitNow = () => { clearTimeout(fitT); fitT = setTimeout(() => fitColumn(slides[cur]), 30); };
+  document.addEventListener("toggle", fitNow, true); document.addEventListener("click", fitNow, true); addEventListener("resize", fitNow);
+  if (window.ResizeObserver) { const ro = new ResizeObserver(fitNow); for (const t of document.querySelectorAll(".slide .text")) ro.observe(t); }
+  addEventListener("hashchange", fitNow); setInterval(() => fitColumn(slides[cur]), 1500); }
 function guideRing(s) {
   // (an exploration's steps of the reader's: turnNow, below; on a page of tabs, the list of the tab shown)
   const gs = [...s.querySelectorAll(".guide, .turns")], g = gs.find((x) => x.getClientRects().length) || gs[0]; if (!g) return;
@@ -11289,7 +11281,7 @@ for (const pv of document.querySelectorAll(".about .abpv:not([data-live])")) {
     if (c.width === bw * 2 && c.height === bh * 2 && c.parentNode === pv) return;
     c.width = bw * 2; c.height = bh * 2;
     const g = c.getContext("2d", { willReadFrequently: true }), k = Math.max(c.width / img.naturalWidth, c.height / img.naturalHeight); // cover, centred
-    g.imageSmoothingQuality = "high"; g.drawImage(img, (c.width - img.naturalWidth * k) / 2, (c.height - img.naturalHeight * k) / 2, img.naturalWidth * k, img.naturalHeight * k);
+    g.imageSmoothingQuality = "high"; const right = !!pv.closest('[data-about="assets"]'); /* (the 3D assets' picture keeps its right edge, where its count stands: WindDancer's review, “23(”) */ g.drawImage(img, right ? c.width - img.naturalWidth * k : (c.width - img.naturalWidth * k) / 2, (c.height - img.naturalHeight * k) / 2, img.naturalWidth * k, img.naturalHeight * k);
     img.hidden = true; if (c.parentNode !== pv) pv.append(c);
   };
   aboutPics.push(paint);
@@ -12793,7 +12785,11 @@ function camSwitch() {
 // see. A deck with no data-camera (one written out, or a model from before 6.0.0-alpha.52) offers the camera where the
 // subject moves, as before. __sw.camOffer (the checks, tools/reader.mjs --offer) stands for every page's mark.
 const CAM_MOVES = ["hand", "upper", "head", "full"], CAM_DECLARED = slides.some((s) => s.hasAttribute("data-camera"));
+// the camera on one page only: the last page of Level 2, the end-to-end simulator (the owner, 2026-11-23: on Level 3's
+// pages the switch stood over the controls; “只在第二阶段的最后一页”)
+const CAM_PAGE = (() => { const l2 = slides.filter((s) => levelOf(s) === "2"); return l2.length ? l2[l2.length - 1] : null; })();
 function camMoves(sec) {
+  if (sec && CAM_PAGE && sec !== CAM_PAGE) return [];
   const v = (window.__sw && window.__sw.camOffer) || (CAM_DECLARED ? (sec && sec.dataset.camera) || "none" : "hand upper");
   return String(v).split(/\s+/).filter((m) => CAM_MOVES.includes(m));
 }
@@ -13055,9 +13051,12 @@ function readerUse(id) {
 // free thing's page has none here (the hand already turns it, js/free.js)
 const GEST_DOFS = ["turn"];
 const gestDofs = (id) => (freeOf(id) ? [] : GEST_DOFS);
-const gestOf = (id) => !!(PAGES[id] && SIMS[id] && (PAGES[id].handles || []).some((h) => gestDofs(id).includes(h.dof)));
+// a handle with camera: false is the mouse's alone (alpha.85; MoiréWidgets, the owner's “camera mode keeps only the slider”): the
+// hand neither turns it nor is told it can
+const camHandle = (h, id) => gestDofs(id).includes(h.dof) && h.camera !== false;
+const gestOf = (id) => !!(PAGES[id] && SIMS[id] && (PAGES[id].handles || []).some((h) => camHandle(h, id)));
 // the handles the hand moves now: those the page drew this frame (shown, their grip on the frame: HANDLES_AT)
-const gestNow = (id) => (gestOf(id) ? HANDLES_AT.filter((e) => e.st && e.st.id === id && gestDofs(id).includes(e.h.dof)) : []);
+const gestNow = (id) => (gestOf(id) ? HANDLES_AT.filter((e) => e.st && e.st.id === id && camHandle(e.h, id)) : []);
 const wrapDeg = (d) => ((((d + 180) % 360) + 360) % 360) - 180;
 function feedGestures(id, p, t, fresh) {
   const hs = gestNow(id);
@@ -13523,7 +13522,7 @@ const FB_H2C = "https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.8/dist/html2can
 const PAGE_THUMBS = {"about":"thumbs/about.jpg","all":"thumbs/all.jpg","c1":"thumbs/c1.jpg","c2":"thumbs/c2.jpg","c3":"thumbs/c3.jpg","demo":"thumbs/demo.jpg","exp-ablation":"thumbs/exp-ablation.jpg","exp-array":"thumbs/exp-array.jpg","exp-general":"thumbs/exp-general.jpg","exp-kg":"thumbs/exp-kg.jpg","exp-kg2":"thumbs/exp-kg2.jpg","exp-physics":"thumbs/exp-physics.jpg","exp-related":"thumbs/exp-related.jpg","exp-world":"thumbs/exp-world.jpg","explore":"thumbs/explore.jpg","gap":"thumbs/gap.jpg","how":"thumbs/how.jpg","idea":"thumbs/idea.jpg","inuse":"thumbs/inuse.jpg","level-1":"thumbs/level-1.jpg","motivation":"thumbs/motivation.jpg","open":"thumbs/open.jpg","s1":"thumbs/s1.jpg","s2":"thumbs/s2.jpg","s3":"thumbs/s3.jpg","see":"thumbs/see.jpg","sense2sim":"thumbs/sense2sim.jpg","sim-real":"thumbs/sim-real.jpg","start-2":"thumbs/start-2.jpg","start":"thumbs/start.jpg","terms":"thumbs/terms.jpg","title":"thumbs/title.jpg","use":"thumbs/use.jpg","who":"thumbs/who.jpg"};
 // what each answer says it came from: the simulation (its repository's name, Sense2Sim-<paper>), the kit's version and
 // the kind of reader (as picked on the first page, or the default kind marked "not picked"); tools/site.mjs fills S2S_SITE
-const S2S_SITE = {"name":"Sense2Sim-MoireWidgets","kit":"6.0.0-alpha.85","title":"MoiréWidgets: High-Precision, Passive Tangible Interfaces via Moiré Effect","url":"https://ambient-intelligence-lab-umich-eecs.github.io/Sense2Sim-MoireWidgets/","build":"20261123T022202","opening":true};
+const S2S_SITE = {"name":"Sense2Sim-MoireWidgets","kit":"6.0.0-alpha.85","title":"MoiréWidgets: High-Precision, Passive Tangible Interfaces via Moiré Effect","url":"https://ambient-intelligence-lab-umich-eecs.github.io/Sense2Sim-MoireWidgets/","build":"20261123T065937","opening":true};
 const s2sSite = () => S2S_SITE.name || (location.pathname.match(/\/(Sense2Sim-[^/]+)\//) || [])[1] || document.title;
 const s2sKit = () => S2S_SITE.kit || "";
 // A reader never works on an older page than the site's (the owner, 2026-11-22: “每次进入强制刷新浏览器缓存”): as the page
@@ -13546,6 +13545,8 @@ const s2sKit = () => S2S_SITE.kit || "";
   // page of it (the owner, 2026-11-22: “这个后面的show me直接就回到这个界面，而不是还是simulation里的那个界面”)
   document.addEventListener("click", (e) => { const b = e.target.closest && e.target.closest(".btn.go[data-fwd]"); if (!b || !b.closest(".slide") || !b.closest(".slide").querySelector(".abthanks")) return; e.preventDefault(); e.stopImmediatePropagation(); back(); }, true);
   if (typeof go === "function") wrap(); else addEventListener("DOMContentLoaded", wrap);
+  // the simulator drawn: the paper of the way in leaves (opening/entrance.js, from deck.html)
+  if (window.S2S_ENTRANCE) requestAnimationFrame(() => requestAnimationFrame(() => window.S2S_ENTRANCE.ready()));
 })();
 (function freshPage() {
   if (typeof document === "undefined" || navigator.webdriver || !S2S_SITE.build || !/^https?:/.test(location.protocol)) return;
@@ -14592,7 +14593,10 @@ const AU_FONT = (typeof document !== "undefined" && getComputedStyle(document.do
   };
   // no way off a page whose scores are wanted and not given, forward, back or to the table (the owner, 2026-11-22: “依然
   // 存在没有rate就往下一页跳的情况”): with its card open, the card shakes; without, the card comes, and goes there once scored
-  const owes = () => on() && !done() && rateable().some((p) => p.i === cur) && (isExp() || step >= stepsOf(slides[cur]));
+  // (a page whose clip still waits at its set-up has not ended: the clip plays first, then the card comes. Before, a way off
+  // brought the card while the clip waited, and → then played the clip or brought the card by how far the clip had got:
+  // MoiréLens's and Seismo's study walks failed at a different step each run)
+  const owes = () => on() && !done() && rateable().some((p) => p.i === cur) && (isExp() || (step >= stepsOf(slides[cur]) && !held()));
   const go0 = go; go = function (i, s) {
     if (introOpen && i !== cur) return void nudgeIntro();
     // a reader out of the study, a simulation the authors scored: their certificate is a page of its own after the second
